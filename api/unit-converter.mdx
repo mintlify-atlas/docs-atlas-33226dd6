@@ -1,0 +1,181 @@
+---
+title: Unit Converter API
+description: Core converter class reference for all unit converters
+---
+
+## Overview
+
+All unit converters in Univerto follow the same API pattern. Whether you're converting length, mass, time, or any other unit type, the interface remains consistent.
+
+Converters are created using a factory function that accepts a scale definition, returning an object with a single `from()` method that initiates the conversion chain.
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const result = LengthUnitConverter
+  .from(100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convert();
+
+console.log(result); // 1
+```
+
+## API Reference
+
+### from()
+
+Initiates a conversion by specifying the source value and unit.
+
+<ParamField path="value" type="number" required>
+  The numeric value to convert
+</ParamField>
+
+<ParamField path="unit" type="Unit" required>
+  The source unit (e.g., `LENGTH_UNIT.CENTIMETER`, `MASS_UNIT.KILOGRAM`)
+</ParamField>
+
+**Returns:** An object with a `to()` method for specifying the target unit
+
+**Throws:** `Error` if the provided unit is not valid for this converter
+
+#### Example
+
+```typescript
+import { MassUnitConverter } from 'univerto/mass';
+import { MASS_UNIT } from 'univerto/mass';
+
+const conversion = MassUnitConverter.from(1000, MASS_UNIT.GRAM);
+// Returns object with to() method
+```
+
+#### Error Handling
+
+```typescript
+// Throws: Error: Invalid "from" unit "invalid-unit"
+LengthUnitConverter.from(100, 'invalid-unit');
+```
+
+---
+
+### to()
+
+Specifies the target unit for the conversion. This method is called on the object returned by `from()`.
+
+<ParamField path="unit" type="Unit" required>
+  The target unit to convert to
+</ParamField>
+
+**Returns:** An object with three conversion methods:
+- `convert()` - Returns the result as a number
+- `convertToFraction()` - Returns the result as a fraction object
+- `convertToRational()` - Returns the result as a Rational object (internal use)
+
+**Throws:** `Error` if the provided unit is not valid for this converter
+
+#### Example
+
+```typescript
+import { TimeUnitConverter } from 'univerto/time';
+import { TIME_UNIT } from 'univerto/time';
+
+const conversion = TimeUnitConverter
+  .from(60, TIME_UNIT.SECOND)
+  .to(TIME_UNIT.MINUTE);
+// Returns object with convert(), convertToFraction(), convertToRational()
+```
+
+#### Error Handling
+
+```typescript
+// Throws: Error: Invalid "to" unit "invalid-unit"
+LengthUnitConverter
+  .from(100, LENGTH_UNIT.METER)
+  .to('invalid-unit');
+```
+
+---
+
+## Method Chaining Flow
+
+The converter API uses a fluent interface pattern:
+
+```typescript
+// Step 1: Start with the converter
+LengthUnitConverter
+
+// Step 2: Specify source value and unit
+  .from(100, LENGTH_UNIT.CENTIMETER)
+
+// Step 3: Specify target unit
+  .to(LENGTH_UNIT.METER)
+
+// Step 4: Execute conversion
+  .convert();
+```
+
+### Type Safety
+
+The converter uses TypeScript generics to ensure type safety:
+
+```typescript
+// Unit types are enforced at compile time
+LengthUnitConverter.from(100, LENGTH_UNIT.METER); // ✓ Valid
+LengthUnitConverter.from(100, MASS_UNIT.KILOGRAM); // ✗ Type error
+```
+
+---
+
+## Common Patterns
+
+### Converting Between Units
+
+```typescript
+import { VolumeUnitConverter } from 'univerto/volume';
+import { VOLUME_UNIT } from 'univerto/volume';
+
+const liters = VolumeUnitConverter
+  .from(1, VOLUME_UNIT.GALLON)
+  .to(VOLUME_UNIT.LITER)
+  .convert();
+```
+
+### Converting to Same Unit
+
+```typescript
+// Returns the same value
+const result = LengthUnitConverter
+  .from(42, LENGTH_UNIT.METER)
+  .to(LENGTH_UNIT.METER)
+  .convert();
+// result === 42
+```
+
+### Converting Zero
+
+```typescript
+// Zero converts to zero in any unit
+const result = MassUnitConverter
+  .from(0, MASS_UNIT.GRAM)
+  .to(MASS_UNIT.KILOGRAM)
+  .convert();
+// result === 0
+```
+
+### Converting Negative Values
+
+```typescript
+// Negative values are supported
+const result = LengthUnitConverter
+  .from(-100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convert();
+// result === -1
+```
+
+---
+
+## See Also
+
+- [Conversion Methods](/api/conversion-methods) - Detailed documentation for `convert()`, `convertToFraction()`, and `convertToRational()`
+- [Types & Interfaces](/api/types) - TypeScript type definitions

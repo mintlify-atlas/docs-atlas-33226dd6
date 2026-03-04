@@ -1,0 +1,115 @@
+---
+title: "Voltage Converter"
+description: "Convert between voltage units from millivolts to megavolts"
+---
+
+## Overview
+
+The Voltage converter supports conversions between electrical voltage units, from small millivolt measurements to large megavolt values.
+
+## Import
+
+```typescript
+import { VoltageUnitConverter, VOLTAGE_UNIT } from 'univerto/voltage'
+```
+
+## Available Units
+
+The `VOLTAGE_UNIT` constant provides the following units:
+
+- `MILLIVOLT` - Millivolt (mV)
+- `VOLT` - Volt (V)
+- `KILOVOLT` - Kilovolt (kV)
+- `MEGAVOLT` - Megavolt (MV)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { VoltageUnitConverter, VOLTAGE_UNIT } from 'univerto/voltage'
+
+// Convert 5000 mV to V
+const volts = VoltageUnitConverter.from(5000, VOLTAGE_UNIT.MILLIVOLT)
+  .to(VOLTAGE_UNIT.VOLT)
+  .convert()
+
+console.log(volts) // 5
+```
+
+```typescript High Voltage
+import { VoltageUnitConverter, VOLTAGE_UNIT } from 'univerto/voltage'
+
+// Convert 220 V to kV
+const kilovolts = VoltageUnitConverter.from(220, VOLTAGE_UNIT.VOLT)
+  .to(VOLTAGE_UNIT.KILOVOLT)
+  .convert()
+
+console.log(kilovolts) // 0.22
+```
+
+```typescript High Precision
+import { VoltageUnitConverter, VOLTAGE_UNIT } from 'univerto/voltage'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = VoltageUnitConverter.from(1, VOLTAGE_UNIT.KILOVOLT)
+  .to(VOLTAGE_UNIT.VOLT)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Electronic Circuits
+
+```typescript
+// Millivolts to volts (sensor reading)
+const sensorVoltage = VoltageUnitConverter.from(3300, VOLTAGE_UNIT.MILLIVOLT)
+  .to(VOLTAGE_UNIT.VOLT)
+  .convert() // 3.3
+
+// Volts to millivolts (ADC reference)
+const adcReference = VoltageUnitConverter.from(5, VOLTAGE_UNIT.VOLT)
+  .to(VOLTAGE_UNIT.MILLIVOLT)
+  .convert() // 5000
+```
+
+### Power Systems
+
+```typescript
+// Household voltage (V to kV)
+const householdKV = VoltageUnitConverter.from(120, VOLTAGE_UNIT.VOLT)
+  .to(VOLTAGE_UNIT.KILOVOLT)
+  .convert() // 0.12
+
+// Industrial voltage (kV to V)
+const industrialV = VoltageUnitConverter.from(11, VOLTAGE_UNIT.KILOVOLT)
+  .to(VOLTAGE_UNIT.VOLT)
+  .convert() // 11000
+
+// Transmission line (kV to MV)
+const transmissionMV = VoltageUnitConverter.from(500, VOLTAGE_UNIT.KILOVOLT)
+  .to(VOLTAGE_UNIT.MEGAVOLT)
+  .convert() // 0.5
+```
+
+### Laboratory Measurements
+
+```typescript
+// Battery voltage (mV to V)
+const batteryVoltage = VoltageUnitConverter.from(1500, VOLTAGE_UNIT.MILLIVOLT)
+  .to(VOLTAGE_UNIT.VOLT)
+  .convert() // 1.5
+
+// Power supply (V to mV)
+const powerSupply = VoltageUnitConverter.from(12, VOLTAGE_UNIT.VOLT)
+  .to(VOLTAGE_UNIT.MILLIVOLT)
+  .convert() // 12000
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

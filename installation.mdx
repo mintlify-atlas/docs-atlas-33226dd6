@@ -1,0 +1,91 @@
+---
+title: Installation
+description: Install Univerto in your JavaScript or TypeScript project
+---
+
+## Package Manager Installation
+
+Install Univerto using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install univerto
+```
+
+```bash yarn
+yarn add univerto
+```
+
+```bash pnpm
+pnpm add univerto
+```
+
+</CodeGroup>
+
+## Requirements
+
+<Info>
+  Univerto requires **Node.js 18.0.0** or higher.
+</Info>
+
+The library is designed to work in both Node.js and browser environments with zero dependencies.
+
+### TypeScript Support
+
+Univerto is written in TypeScript and includes built-in type definitions. No additional `@types` packages are needed.
+
+## Verify Installation
+
+After installation, you can verify that Univerto is working by creating a simple test file:
+
+```typescript test.ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+
+const milliseconds = TimeUnitConverter.from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert()
+
+console.log(milliseconds) // 3600000
+```
+
+Run the file:
+
+```bash
+node test.ts
+```
+
+If you see `3600000` in the output, Univerto is installed correctly.
+
+## Import Structure
+
+Univerto uses subpath exports to keep your bundle size minimal. Import only the converters you need:
+
+```typescript
+// Import specific unit converters
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+import { LENGTH_UNIT, LengthUnitConverter } from 'univerto/length'
+import { MASS_UNIT, MassUnitConverter } from 'univerto/mass'
+
+// Available subpaths:
+// univerto/time
+// univerto/length
+// univerto/area
+// univerto/volume
+// univerto/mass
+// univerto/speed
+// univerto/data
+// univerto/voltage
+// univerto/current
+// univerto/frequency
+```
+
+<Tip>
+  By importing only the converters you need, you keep your bundle size small and your application fast.
+</Tip>
+
+## Next Steps
+
+<Card title="Quick Start" icon="rocket" href="/quickstart">
+  Learn how to perform your first unit conversion
+</Card>

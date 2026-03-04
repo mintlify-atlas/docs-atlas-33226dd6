@@ -1,0 +1,147 @@
+---
+title: "Data Storage Converter"
+description: "Convert between data storage units from bits to exbibytes"
+---
+
+## Overview
+
+The Data Storage converter supports conversions between decimal (SI) and binary (IEC) data units, covering everything from bits to exabytes and exbibytes.
+
+## Import
+
+```typescript
+import { DataUnitConverter, DATA_UNIT } from 'univerto/data'
+```
+
+## Available Units
+
+The `DATA_UNIT` constant provides the following units:
+
+**Decimal (SI) Units:**
+- `BIT` - Bit
+- `BYTE` - Byte (8 bits)
+- `KILOBYTE` - Kilobyte (1000 bytes)
+- `MEGABYTE` - Megabyte (1000 KB)
+- `GIGABYTE` - Gigabyte (1000 MB)
+- `TERABYTE` - Terabyte (1000 GB)
+- `PETABYTE` - Petabyte (1000 TB)
+- `EXABYTE` - Exabyte (1000 PB)
+
+**Binary (IEC) Units:**
+- `KIBIBYTE` - Kibibyte (1024 bytes)
+- `MEBIBYTE` - Mebibyte (1024 KiB)
+- `GIBIBYTE` - Gibibyte (1024 MiB)
+- `TEBIBYTE` - Tebibyte (1024 GiB)
+- `PEBIBYTE` - Pebibyte (1024 TiB)
+- `EXBIBYTE` - Exbibyte (1024 PiB)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { DataUnitConverter, DATA_UNIT } from 'univerto/data'
+
+// Convert 1 GB to MB
+const megabytes = DataUnitConverter.from(1, DATA_UNIT.GIGABYTE)
+  .to(DATA_UNIT.MEGABYTE)
+  .convert()
+
+console.log(megabytes) // 1000
+```
+
+```typescript Binary Units
+import { DataUnitConverter, DATA_UNIT } from 'univerto/data'
+
+// Convert 1 GiB to MiB
+const mebibytes = DataUnitConverter.from(1, DATA_UNIT.GIBIBYTE)
+  .to(DATA_UNIT.MEBIBYTE)
+  .convert()
+
+console.log(mebibytes) // 1024
+```
+
+```typescript High Precision
+import { DataUnitConverter, DATA_UNIT } from 'univerto/data'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = DataUnitConverter.from(1, DATA_UNIT.TERABYTE)
+  .to(DATA_UNIT.GIGABYTE)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### File Sizes
+
+```typescript
+// Megabytes to gigabytes (file size)
+const fileSize = DataUnitConverter.from(2500, DATA_UNIT.MEGABYTE)
+  .to(DATA_UNIT.GIGABYTE)
+  .convert() // 2.5
+
+// Gigabytes to megabytes
+const videoSize = DataUnitConverter.from(4.7, DATA_UNIT.GIGABYTE)
+  .to(DATA_UNIT.MEGABYTE)
+  .convert() // 4700
+
+// Bytes to kilobytes
+const smallFile = DataUnitConverter.from(5000, DATA_UNIT.BYTE)
+  .to(DATA_UNIT.KILOBYTE)
+  .convert() // 5
+```
+
+### Storage Capacity
+
+```typescript
+// Terabytes to gigabytes (hard drive)
+const hddSize = DataUnitConverter.from(2, DATA_UNIT.TERABYTE)
+  .to(DATA_UNIT.GIGABYTE)
+  .convert() // 2000
+
+// Gigabytes to terabytes (SSD)
+const ssdSize = DataUnitConverter.from(512, DATA_UNIT.GIGABYTE)
+  .to(DATA_UNIT.TERABYTE)
+  .convert() // 0.512
+```
+
+### Binary vs Decimal Units
+
+```typescript
+// Gigabyte (decimal) to Gibibyte (binary)
+const gbToGib = DataUnitConverter.from(100, DATA_UNIT.GIGABYTE)
+  .to(DATA_UNIT.GIBIBYTE)
+  .convert() // 93.132
+
+// Gibibyte to Gigabyte
+const gibToGb = DataUnitConverter.from(100, DATA_UNIT.GIBIBYTE)
+  .to(DATA_UNIT.GIGABYTE)
+  .convert() // 107.374
+
+// Mebibyte to Megabyte
+const mibToMb = DataUnitConverter.from(256, DATA_UNIT.MEBIBYTE)
+  .to(DATA_UNIT.MEGABYTE)
+  .convert() // 268.435
+```
+
+### Network & Transfer Rates
+
+```typescript
+// Bits to bytes (download size)
+const downloadBytes = DataUnitConverter.from(8000000, DATA_UNIT.BIT)
+  .to(DATA_UNIT.BYTE)
+  .convert() // 1000000
+
+// Megabytes to megabits (bandwidth)
+const bandwidth = DataUnitConverter.from(100, DATA_UNIT.MEGABYTE)
+  .to(DATA_UNIT.BIT)
+  .convert() // 800000000
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

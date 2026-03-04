@@ -1,0 +1,410 @@
+---
+title: Types & Interfaces
+description: TypeScript type definitions for Univerto converters
+---
+
+## Overview
+
+Univerto is built with TypeScript and provides full type safety for all conversions. Each converter module exports its own unit types, and the core library provides shared type definitions.
+
+---
+
+## Unit Types
+
+Each converter module defines its own unit type and constant object.
+
+### Pattern
+
+All unit types follow this pattern:
+
+```typescript
+// Type extracted from constant object
+export type LengthUnit = (typeof LENGTH_UNIT)[keyof typeof LENGTH_UNIT];
+
+// Frozen constant object with unit values
+export const LENGTH_UNIT = Object.freeze({
+  METER: 'meter',
+  KILOMETER: 'kilometer',
+  // ...
+});
+```
+
+### Example: Length Units
+
+```typescript
+import { LENGTH_UNIT, LengthUnit } from 'univerto/length';
+
+// Type: LengthUnit = 'meter' | 'kilometer' | 'centimeter' | ...
+const unit: LengthUnit = LENGTH_UNIT.METER;
+
+// Available length units
+const LENGTH_UNIT = {
+  NANOMETER: 'nanometer',
+  MICROMETER: 'micrometer',
+  MILLIMETER: 'millimeter',
+  CENTIMETER: 'centimeter',
+  METER: 'meter',
+  KILOMETER: 'kilometer',
+  INCH: 'inch',
+  HAND: 'hand',
+  FOOT: 'foot',
+  YARD: 'yard',
+  CHAIN: 'chain',
+  FURLONG: 'furlong',
+  MILE: 'mile',
+  LEAGUE: 'league'
+};
+```
+
+### Other Unit Types
+
+Each converter follows the same pattern:
+
+```typescript
+import { MASS_UNIT, MassUnit } from 'univerto/mass';
+import { TIME_UNIT, TimeUnit } from 'univerto/time';
+import { VOLUME_UNIT, VolumeUnit } from 'univerto/volume';
+import { AREA_UNIT, AreaUnit } from 'univerto/area';
+import { SPEED_UNIT, SpeedUnit } from 'univerto/speed';
+import { DATA_UNIT, DataUnit } from 'univerto/data';
+import { CURRENT_UNIT, CurrentUnit } from 'univerto/current';
+import { VOLTAGE_UNIT, VoltageUnit } from 'univerto/voltage';
+import { FREQUENCY_UNIT, FrequencyUnit } from 'univerto/frequency';
+```
+
+---
+
+## Fraction Interface
+
+Returned by the `convertToFraction()` method.
+
+```typescript
+interface Fraction {
+  numerator: number;
+  denominator: number;
+}
+```
+
+### Properties
+
+<ResponseField name="numerator" type="number">
+  The numerator of the fraction
+</ResponseField>
+
+<ResponseField name="denominator" type="number">
+  The denominator of the fraction
+</ResponseField>
+
+### Usage
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const fraction = LengthUnitConverter
+  .from(1, LENGTH_UNIT.INCH)
+  .to(LENGTH_UNIT.CENTIMETER)
+  .convertToFraction();
+
+// fraction: { numerator: number, denominator: number }
+const decimal = fraction.numerator / fraction.denominator;
+```
+
+---
+
+## Rational Class
+
+The Rational class is used internally for high-precision conversions.
+
+```typescript
+class Rational {
+  constructor(numerator: number, denominator: number);
+  
+  static fromNumber(number: number): Rational;
+  static pow(base: number, exp: number): Rational;
+  
+  toNumber(): number;
+  toFraction(): { numerator: number; denominator: number };
+  
+  multiply(other: Rational): Rational;
+  divide(other: Rational): Rational;
+}
+```
+
+### Constructor
+
+```typescript
+const rational = new Rational(3, 4); // Represents 3/4
+```
+
+<ParamField path="numerator" type="number" required>
+  The numerator of the rational number
+</ParamField>
+
+<ParamField path="denominator" type="number" required>
+  The denominator of the rational number
+</ParamField>
+
+### Static Methods
+
+#### fromNumber()
+
+Creates a Rational from a decimal number.
+
+```typescript
+const rational = Rational.fromNumber(5);
+// Equivalent to new Rational(5, 1)
+```
+
+<ParamField path="number" type="number" required>
+  The number to convert to a Rational
+</ParamField>
+
+#### pow()
+
+Calculates a power as a Rational.
+
+```typescript
+const squared = Rational.pow(10, 2);
+// Returns Rational(100, 1)
+
+const inverse = Rational.pow(10, -2);
+// Returns Rational(1, 100)
+```
+
+<ParamField path="base" type="number" required>
+  The base number
+</ParamField>
+
+<ParamField path="exp" type="number" required>
+  The exponent (can be negative)
+</ParamField>
+
+### Instance Methods
+
+#### toNumber()
+
+Converts the Rational to a decimal number.
+
+```typescript
+const rational = new Rational(3, 4);
+const decimal = rational.toNumber(); // 0.75
+```
+
+#### toFraction()
+
+Converts the Rational to a Fraction object.
+
+```typescript
+const rational = new Rational(3, 4);
+const fraction = rational.toFraction();
+// { numerator: 3, denominator: 4 }
+```
+
+#### multiply()
+
+Multiplies two Rational numbers.
+
+```typescript
+const a = new Rational(2, 3);
+const b = new Rational(3, 4);
+const result = a.multiply(b);
+// Rational(6, 12) = 0.5
+```
+
+<ParamField path="other" type="Rational" required>
+  The Rational to multiply by
+</ParamField>
+
+#### divide()
+
+Divides two Rational numbers.
+
+```typescript
+const a = new Rational(2, 3);
+const b = new Rational(3, 4);
+const result = a.divide(b);
+// Rational(8, 9) ≈ 0.888...
+```
+
+<ParamField path="other" type="Rational" required>
+  The Rational to divide by
+</ParamField>
+
+---
+
+## Unit Scale Type
+
+Defines the internal scale representation for each unit.
+
+```typescript
+type UnitScale = {
+  base: number;
+  exponent: number;
+}
+```
+
+### Properties
+
+<ResponseField name="base" type="number">
+  The base value for the unit scale (e.g., 10 for metric units)
+</ResponseField>
+
+<ResponseField name="exponent" type="number">
+  The exponent applied to the base (e.g., -3 for millimeters)
+</ResponseField>
+
+### Usage
+
+This type is used internally to define conversion scales:
+
+```typescript
+// Example: Meter scale definition
+const meterScale: UnitScale = {
+  base: 10,
+  exponent: 0
+};
+
+// Example: Kilometer scale definition
+const kilometerScale: UnitScale = {
+  base: 10,
+  exponent: 3
+};
+```
+
+**Note:** This type is primarily for internal use and custom converter creation.
+
+---
+
+## Generic Type Parameters
+
+The converter factory uses TypeScript generics to ensure type safety.
+
+```typescript
+function createPreciseConverter<
+  S extends Record<string, Rational>,
+  Unit extends keyof S
+>(scale: S)
+```
+
+### Type Parameters
+
+<ResponseField name="S" type="Record<string, Rational>">
+  A record mapping unit names to their Rational scale values
+</ResponseField>
+
+<ResponseField name="Unit" type="keyof S">
+  The union type of all valid unit keys from the scale
+</ResponseField>
+
+### How It Works
+
+```typescript
+import { createPreciseConverter } from 'univerto/core';
+import { Rational } from 'univerto/core';
+
+// Define a scale
+const myScale = {
+  small: new Rational(1, 1),
+  large: new Rational(100, 1)
+};
+
+// Create a converter with inferred types
+const MyConverter = createPreciseConverter(myScale);
+
+// Type: 'small' | 'large'
+type MyUnit = 'small' | 'large';
+
+// TypeScript enforces valid units
+MyConverter.from(10, 'small');  // ✓ Valid
+MyConverter.from(10, 'medium'); // ✗ Type error
+```
+
+---
+
+## Type Exports
+
+Each converter module exports its types:
+
+```typescript
+// Length module
+export { LENGTH_UNIT, LengthUnit } from 'univerto/length';
+
+// Mass module
+export { MASS_UNIT, MassUnit } from 'univerto/mass';
+
+// Time module
+export { TIME_UNIT, TimeUnit } from 'univerto/time';
+
+// And so on...
+```
+
+### Importing Types
+
+```typescript
+import type { LengthUnit } from 'univerto/length';
+import type { MassUnit } from 'univerto/mass';
+
+// Use in function signatures
+function convertLength(value: number, from: LengthUnit, to: LengthUnit) {
+  return LengthUnitConverter.from(value, from).to(to).convert();
+}
+```
+
+---
+
+## Example Type Usage
+
+### Type-Safe Converter Function
+
+```typescript
+import { LengthUnitConverter, LENGTH_UNIT, LengthUnit } from 'univerto/length';
+
+function convert(
+  value: number,
+  fromUnit: LengthUnit,
+  toUnit: LengthUnit
+): number {
+  return LengthUnitConverter
+    .from(value, fromUnit)
+    .to(toUnit)
+    .convert();
+}
+
+// TypeScript ensures type safety
+const meters = convert(100, LENGTH_UNIT.CENTIMETER, LENGTH_UNIT.METER); // ✓
+const invalid = convert(100, 'invalid', LENGTH_UNIT.METER); // ✗ Type error
+```
+
+### Generic Conversion Function
+
+```typescript
+type Converter<Unit> = {
+  from(value: number, unit: Unit): {
+    to(unit: Unit): {
+      convert(): number;
+      convertToFraction(): { numerator: number; denominator: number };
+    };
+  };
+};
+
+function genericConvert<Unit>(
+  converter: Converter<Unit>,
+  value: number,
+  from: Unit,
+  to: Unit
+): number {
+  return converter.from(value, from).to(to).convert();
+}
+
+// Works with any converter
+genericConvert(LengthUnitConverter, 100, LENGTH_UNIT.CM, LENGTH_UNIT.M);
+genericConvert(MassUnitConverter, 1000, MASS_UNIT.GRAM, MASS_UNIT.KG);
+```
+
+---
+
+## See Also
+
+- [Unit Converter API](/api/unit-converter) - Core converter methods
+- [Conversion Methods](/api/conversion-methods) - Conversion method details

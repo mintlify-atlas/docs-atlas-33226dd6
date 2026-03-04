@@ -1,0 +1,322 @@
+---
+title: High-Precision Arithmetic
+description: Integrating Univerto with decimal.js and other arbitrary-precision libraries
+---
+
+While Univerto maintains precision through its internal fraction-based system, JavaScript's native number type has limitations. For applications requiring **arbitrary precision** or working with extremely large/small numbers, you can integrate Univerto with high-precision arithmetic libraries.
+
+## Why Use Arbitrary Precision?
+
+JavaScript's `number` type (IEEE 754 double-precision) has constraints:
+
+- **Maximum safe integer**: `2^53 - 1` (9,007,199,254,740,991)
+- **Precision**: ~15-17 significant decimal digits
+- **Range**: ±1.7976931348623157 × 10^308
+
+You might need arbitrary precision for:
+
+- **Financial calculations**: Exact decimal arithmetic for monetary values
+- **Scientific computing**: Measurements with many significant figures
+- **Cryptography**: Very large integer operations
+- **Astronomy/physics**: Extremely large or small values
+
+## The `convertToFraction()` Method
+
+Univerto provides `convertToFraction()` to expose the internal fraction representation:
+
+```ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+
+const fraction = TimeUnitConverter.from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convertToFraction()
+
+console.log(fraction)
+// { numerator: 3600000, denominator: 1 }
+```
+
+This returns a simple object:
+
+```ts
+interface Fraction {
+  numerator: number
+  denominator: number
+}
+```
+
+You can pass these values to any arbitrary-precision library to perform the final division with the precision you need.
+
+## Integration with decimal.js
+
+[decimal.js](https://github.com/MikeMcl/decimal.js) is a popular arbitrary-precision library for JavaScript.
+
+### Installation
+
+```bash
+npm install decimal.js
+```
+
+### Basic Usage
+
+```ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+import { Decimal } from 'decimal.js'
+
+// Get the fraction from Univerto
+const fraction = TimeUnitConverter.from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convertToFraction()
+
+// Perform high-precision division
+const result = new Decimal(fraction.numerator)
+  .div(fraction.denominator)
+
+console.log(result.toString()) // "3600000"
+```
+
+### Complex Example: Nanosecond Precision
+
+```ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+import { Decimal } from 'decimal.js'
+
+// Configure decimal.js for high precision
+Decimal.set({ precision: 50 })
+
+// Convert with extreme precision requirements
+const fraction = TimeUnitConverter.from(1.123456789, TIME_UNIT.NANOSECOND)
+  .to(TIME_UNIT.HOUR)
+  .convertToFraction()
+
+const hours = new Decimal(fraction.numerator)
+  .div(fraction.denominator)
+
+console.log(hours.toString())
+// Maintains precision beyond JavaScript's native capabilities
+```
+
+### Working with Large Values
+
+```ts
+import { DATA_UNIT, DataUnitConverter } from 'univerto/data'
+import { Decimal } from 'decimal.js'
+
+// Convert petabytes to bits (very large number)
+const fraction = DataUnitConverter.from(1, DATA_UNIT.PETABYTE)
+  .to(DATA_UNIT.BIT)
+  .convertToFraction()
+
+const bits = new Decimal(fraction.numerator)
+  .div(fraction.denominator)
+
+console.log(bits.toExponential())
+// "9e+15" - safely handles values beyond MAX_SAFE_INTEGER
+```
+
+## Integration with Other Libraries
+
+The `convertToFraction()` method works with any arbitrary-precision library.
+
+### Big.js
+
+[Big.js](https://github.com/MikeMcl/big.js) is a smaller, simpler alternative to decimal.js.
+
+```ts
+import { MASS_UNIT, MassUnitConverter } from 'univerto/mass'
+import Big from 'big.js'
+
+const fraction = MassUnitConverter.from(1.5, MASS_UNIT.KILOGRAM)
+  .to(MASS_UNIT.GRAM)
+  .convertToFraction()
+
+const grams = new Big(fraction.numerator)
+  .div(fraction.denominator)
+
+console.log(grams.toString()) // "1500"
+```
+
+### bignumber.js
+
+[bignumber.js](https://github.com/MikeMcl/bignumber.js) provides similar functionality.
+
+```ts
+import { LENGTH_UNIT, LengthUnitConverter } from 'univerto/length'
+import { BigNumber } from 'bignumber.js'
+
+const fraction = LengthUnitConverter.from(100, LENGTH_UNIT.KILOMETER)
+  .to(LENGTH_UNIT.METER)
+  .convertToFraction()
+
+const meters = new BigNumber(fraction.numerator)
+  .div(fraction.denominator)
+
+console.log(meters.toString()) // "100000"
+```
+
+### Native BigInt (for integers only)
+
+For integer-only operations, you can use JavaScript's native `BigInt`:
+
+```ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+
+const fraction = TimeUnitConverter.from(1000, TIME_UNIT.SECOND)
+  .to(TIME_UNIT.MILLISECOND)
+  .convertToFraction()
+
+// Only use BigInt when denominator is 1 (integer result)
+if (fraction.denominator === 1) {
+  const result = BigInt(fraction.numerator)
+  console.log(result.toString()) // "1000000"
+} else {
+  // Handle fractional results with a library
+}
+```
+
+<Warning>
+`BigInt` cannot represent fractional values. Only use it when you're certain the result will be an integer, or when you can handle the numerator and denominator separately.
+</Warning>
+
+## When to Use `convert()` vs `convertToFraction()`
+
+### Use `convert()` when:
+
+- Working with typical numeric ranges (within JavaScript's safe integer limit)
+- Performance is critical (native numbers are faster)
+- The built-in precision (15-17 significant digits) is sufficient
+- Integrating with APIs/libraries that expect standard numbers
+
+```ts
+import { SPEED_UNIT, SpeedUnitConverter } from 'univerto/speed'
+
+// Standard usage - convert() is fine
+const mph = SpeedUnitConverter.from(100, SPEED_UNIT.KILOMETER_PER_HOUR)
+  .to(SPEED_UNIT.MILE_PER_HOUR)
+  .convert()
+```
+
+### Use `convertToFraction()` when:
+
+- Dealing with very large or very small numbers
+- Requiring more than 15-17 significant digits of precision
+- Performing financial calculations requiring exact decimal arithmetic
+- Chaining multiple operations where precision loss could compound
+- Interfacing with systems that work with rational numbers
+
+```ts
+import { VOLUME_UNIT, VolumeUnitConverter } from 'univerto/volume'
+import { Decimal } from 'decimal.js'
+
+// High-precision scenario
+const fraction = VolumeUnitConverter.from(1/3, VOLUME_UNIT.LITER)
+  .to(VOLUME_UNIT.MILLILITER)
+  .convertToFraction()
+
+const ml = new Decimal(fraction.numerator).div(fraction.denominator)
+```
+
+## Best Practices
+
+### 1. Choose the Right Library
+
+- **decimal.js**: Full-featured, configurable precision, slower
+- **Big.js**: Smaller, simpler, faster, less configurable
+- **bignumber.js**: Similar to Big.js with different API
+- **Native BigInt**: Fastest, but integers only
+
+### 2. Configure Precision Appropriately
+
+```ts
+import { Decimal } from 'decimal.js'
+
+// Set precision based on your needs
+Decimal.set({ 
+  precision: 50,           // Significant digits
+  rounding: Decimal.ROUND_HALF_UP
+})
+```
+
+### 3. Defer Division Until the End
+
+If you're performing multiple operations, keep values as fractions:
+
+```ts
+import { TIME_UNIT, TimeUnitConverter } from 'univerto/time'
+import { Decimal } from 'decimal.js'
+
+// Get fraction, perform additional operations, then divide once
+const fraction = TimeUnitConverter.from(100, TIME_UNIT.SECOND)
+  .to(TIME_UNIT.MILLISECOND)
+  .convertToFraction()
+
+// Additional operations on numerator/denominator
+const adjustedNumerator = fraction.numerator * 2
+
+// Single final division
+const result = new Decimal(adjustedNumerator).div(fraction.denominator)
+```
+
+### 4. Handle Edge Cases
+
+```ts
+const fraction = converter.convertToFraction()
+
+if (fraction.denominator === 0) {
+  throw new Error('Division by zero')
+}
+
+if (!Number.isFinite(fraction.numerator) || !Number.isFinite(fraction.denominator)) {
+  throw new Error('Invalid fraction values')
+}
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+```
+
+## Real-World Use Cases
+
+### Financial Application
+
+```ts
+import { VOLUME_UNIT, VolumeUnitConverter } from 'univerto/volume'
+import { Decimal } from 'decimal.js'
+
+Decimal.set({ precision: 10, rounding: Decimal.ROUND_HALF_UP })
+
+// Precise billing for liquid volume
+const pricePerLiter = new Decimal('3.99')
+const fraction = VolumeUnitConverter.from(500, VOLUME_UNIT.MILLILITER)
+  .to(VOLUME_UNIT.LITER)
+  .convertToFraction()
+
+const liters = new Decimal(fraction.numerator).div(fraction.denominator)
+const totalCost = liters.mul(pricePerLiter)
+
+console.log(totalCost.toFixed(2)) // "1.995" → rounds to "2.00"
+```
+
+### Scientific Measurement
+
+```ts
+import { LENGTH_UNIT, LengthUnitConverter } from 'univerto/length'
+import { Decimal } from 'decimal.js'
+
+Decimal.set({ precision: 100 })
+
+// Astronomical distance with extreme precision
+const fraction = LengthUnitConverter.from(1e-15, LENGTH_UNIT.METER)
+  .to(LENGTH_UNIT.NANOMETER)
+  .convertToFraction()
+
+const nanometers = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(nanometers.toExponential(50))
+```
+
+## Summary
+
+- Use `convertToFraction()` to access Univerto's internal fraction representation
+- Integrate with decimal.js, Big.js, bignumber.js, or native BigInt for arbitrary precision
+- Choose `convert()` for standard use cases, `convertToFraction()` when precision is critical
+- Configure your precision library appropriately for your use case
+- Keep values as fractions as long as possible before final division
+
+By combining Univerto's precision-preserving conversions with arbitrary-precision arithmetic libraries, you can handle any numeric requirement with confidence.

@@ -1,0 +1,155 @@
+---
+title: "Frequency Converter"
+description: "Convert between frequency units from millihertz to terahertz and RPM"
+---
+
+## Overview
+
+The Frequency converter supports conversions between various frequency units, from slow oscillations in millihertz to extremely high terahertz frequencies, plus rotational measurements like RPM.
+
+## Import
+
+```typescript
+import { FrequencyUnitConverter, FREQUENCY_UNIT } from 'univerto/frequency'
+```
+
+## Available Units
+
+The `FREQUENCY_UNIT` constant provides the following units:
+
+**Standard Frequency Units:**
+- `MILLIHERTZ` - Millihertz (mHz)
+- `HERTZ` - Hertz (Hz)
+- `KILOHERTZ` - Kilohertz (kHz)
+- `MEGAHERTZ` - Megahertz (MHz)
+- `GIGAHERTZ` - Gigahertz (GHz)
+- `TERAHERTZ` - Terahertz (THz)
+
+**Rotational Units:**
+- `RPM` - Revolutions per minute
+- `DEGREE_PER_SECOND` - Degrees per second (°/s)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { FrequencyUnitConverter, FREQUENCY_UNIT } from 'univerto/frequency'
+
+// Convert 1000 Hz to kHz
+const kilohertz = FrequencyUnitConverter.from(1000, FREQUENCY_UNIT.HERTZ)
+  .to(FREQUENCY_UNIT.KILOHERTZ)
+  .convert()
+
+console.log(kilohertz) // 1
+```
+
+```typescript RPM Conversion
+import { FrequencyUnitConverter, FREQUENCY_UNIT } from 'univerto/frequency'
+
+// Convert 3600 RPM to Hz
+const hertz = FrequencyUnitConverter.from(3600, FREQUENCY_UNIT.RPM)
+  .to(FREQUENCY_UNIT.HERTZ)
+  .convert()
+
+console.log(hertz) // 60
+```
+
+```typescript High Precision
+import { FrequencyUnitConverter, FREQUENCY_UNIT } from 'univerto/frequency'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = FrequencyUnitConverter.from(1, FREQUENCY_UNIT.GIGAHERTZ)
+  .to(FREQUENCY_UNIT.MEGAHERTZ)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Audio & Sound
+
+```typescript
+// Middle A note (Hz to kHz)
+const noteA = FrequencyUnitConverter.from(440, FREQUENCY_UNIT.HERTZ)
+  .to(FREQUENCY_UNIT.KILOHERTZ)
+  .convert() // 0.44
+
+// Ultrasonic frequency (kHz to Hz)
+const ultrasonic = FrequencyUnitConverter.from(40, FREQUENCY_UNIT.KILOHERTZ)
+  .to(FREQUENCY_UNIT.HERTZ)
+  .convert() // 40000
+```
+
+### Radio & Communications
+
+```typescript
+// FM radio (MHz to kHz)
+const fmRadio = FrequencyUnitConverter.from(101.5, FREQUENCY_UNIT.MEGAHERTZ)
+  .to(FREQUENCY_UNIT.KILOHERTZ)
+  .convert() // 101500
+
+// AM radio (kHz to MHz)
+const amRadio = FrequencyUnitConverter.from(1500, FREQUENCY_UNIT.KILOHERTZ)
+  .to(FREQUENCY_UNIT.MEGAHERTZ)
+  .convert() // 1.5
+
+// WiFi frequency (GHz to MHz)
+const wifi = FrequencyUnitConverter.from(2.4, FREQUENCY_UNIT.GIGAHERTZ)
+  .to(FREQUENCY_UNIT.MEGAHERTZ)
+  .convert() // 2400
+```
+
+### Computing & Processors
+
+```typescript
+// CPU clock speed (GHz to MHz)
+const cpuSpeed = FrequencyUnitConverter.from(3.6, FREQUENCY_UNIT.GIGAHERTZ)
+  .to(FREQUENCY_UNIT.MEGAHERTZ)
+  .convert() // 3600
+
+// Memory frequency (MHz to GHz)
+const memoryFreq = FrequencyUnitConverter.from(3200, FREQUENCY_UNIT.MEGAHERTZ)
+  .to(FREQUENCY_UNIT.GIGAHERTZ)
+  .convert() // 3.2
+```
+
+### Mechanical & Rotational
+
+```typescript
+// Engine speed (RPM to Hz)
+const engineFreq = FrequencyUnitConverter.from(6000, FREQUENCY_UNIT.RPM)
+  .to(FREQUENCY_UNIT.HERTZ)
+  .convert() // 100
+
+// Motor speed (Hz to RPM)
+const motorSpeed = FrequencyUnitConverter.from(50, FREQUENCY_UNIT.HERTZ)
+  .to(FREQUENCY_UNIT.RPM)
+  .convert() // 3000
+
+// Angular velocity (degrees per second to RPM)
+const angularVel = FrequencyUnitConverter.from(360, FREQUENCY_UNIT.DEGREE_PER_SECOND)
+  .to(FREQUENCY_UNIT.RPM)
+  .convert() // 60
+```
+
+### Scientific Applications
+
+```typescript
+// Infrared light (THz to GHz)
+const infrared = FrequencyUnitConverter.from(300, FREQUENCY_UNIT.TERAHERTZ)
+  .to(FREQUENCY_UNIT.GIGAHERTZ)
+  .convert() // 300000
+
+// Microwave (GHz to THz)
+const microwave = FrequencyUnitConverter.from(10, FREQUENCY_UNIT.GIGAHERTZ)
+  .to(FREQUENCY_UNIT.TERAHERTZ)
+  .convert() // 0.01
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

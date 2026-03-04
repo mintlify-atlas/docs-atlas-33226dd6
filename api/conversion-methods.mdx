@@ -1,0 +1,302 @@
+---
+title: Conversion Methods
+description: Methods for performing unit conversions with different output formats
+---
+
+## Overview
+
+After specifying the source and target units using `from()` and `to()`, you can execute the conversion using one of three methods:
+
+- **`convert()`** - Returns a decimal number (most common)
+- **`convertToFraction()`** - Returns a fraction object with numerator and denominator
+- **`convertToRational()`** - Returns a Rational object (for internal use)
+
+All three methods perform the same conversion but return the result in different formats.
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const conversion = LengthUnitConverter
+  .from(100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER);
+
+conversion.convert();           // 1
+conversion.convertToFraction(); // { numerator: 1, denominator: 1 }
+conversion.convertToRational(); // Rational { numerator: 1, denominator: 1 }
+```
+
+---
+
+## convert()
+
+Returns the conversion result as a decimal number.
+
+**Signature:**
+```typescript
+convert(): number
+```
+
+<ResponseField name="return" type="number">
+  The converted value as a decimal number
+</ResponseField>
+
+### When to Use
+
+Use `convert()` when you need:
+- A simple numeric result for calculations
+- Display values in your UI
+- Integration with existing numeric operations
+
+This is the most commonly used conversion method.
+
+### Examples
+
+#### Basic Conversion
+
+```typescript
+import { MassUnitConverter } from 'univerto/mass';
+import { MASS_UNIT } from 'univerto/mass';
+
+const kilograms = MassUnitConverter
+  .from(1000, MASS_UNIT.GRAM)
+  .to(MASS_UNIT.KILOGRAM)
+  .convert();
+
+console.log(kilograms); // 1
+```
+
+#### Using Result in Calculations
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const meters = LengthUnitConverter
+  .from(5, LENGTH_UNIT.KILOMETER)
+  .to(LENGTH_UNIT.METER)
+  .convert();
+
+const area = meters * meters; // 25000000
+```
+
+#### Chaining Conversions
+
+```typescript
+import { TimeUnitConverter } from 'univerto/time';
+import { TIME_UNIT } from 'univerto/time';
+
+const hours = TimeUnitConverter
+  .from(120, TIME_UNIT.MINUTE)
+  .to(TIME_UNIT.HOUR)
+  .convert();
+
+const days = TimeUnitConverter
+  .from(hours, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.DAY)
+  .convert();
+
+console.log(days); // 0.08333...
+```
+
+---
+
+## convertToFraction()
+
+Returns the conversion result as a fraction with separate numerator and denominator.
+
+**Signature:**
+```typescript
+convertToFraction(): { numerator: number; denominator: number }
+```
+
+<ResponseField name="return" type="object">
+  An object containing the fraction representation
+  
+  <ResponseField name="numerator" type="number">
+    The numerator of the fraction
+  </ResponseField>
+  
+  <ResponseField name="denominator" type="number">
+    The denominator of the fraction
+  </ResponseField>
+</ResponseField>
+
+### When to Use
+
+Use `convertToFraction()` when you need:
+- High-precision arithmetic without floating-point errors
+- To preserve exact ratios
+- To display results as fractions in UI
+- To perform further rational arithmetic
+
+### Examples
+
+#### Basic Fraction Conversion
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const fraction = LengthUnitConverter
+  .from(1, LENGTH_UNIT.INCH)
+  .to(LENGTH_UNIT.CENTIMETER)
+  .convertToFraction();
+
+console.log(fraction);
+// { numerator: 127, denominator: 50 }
+// Exact: 2.54 cm
+```
+
+#### High-Precision Arithmetic
+
+```typescript
+import { MassUnitConverter } from 'univerto/mass';
+import { MASS_UNIT } from 'univerto/mass';
+
+const fraction = MassUnitConverter
+  .from(1, MASS_UNIT.POUND)
+  .to(MASS_UNIT.GRAM)
+  .convertToFraction();
+
+// Use fraction for precise calculations
+const { numerator, denominator } = fraction;
+const totalGrams = (numerator * 10) / denominator;
+```
+
+#### Displaying Fractions
+
+```typescript
+import { VolumeUnitConverter } from 'univerto/volume';
+import { VOLUME_UNIT } from 'univerto/volume';
+
+const fraction = VolumeUnitConverter
+  .from(0.5, VOLUME_UNIT.GALLON)
+  .to(VOLUME_UNIT.LITER)
+  .convertToFraction();
+
+const display = `${fraction.numerator}/${fraction.denominator} liters`;
+console.log(display);
+```
+
+#### Converting Back to Decimal
+
+```typescript
+const fraction = LengthUnitConverter
+  .from(100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convertToFraction();
+
+const decimal = fraction.numerator / fraction.denominator;
+console.log(decimal); // 1
+```
+
+---
+
+## convertToRational()
+
+Returns the conversion result as a Rational object. This method is primarily for internal use.
+
+**Signature:**
+```typescript
+convertToRational(): Rational
+```
+
+<ResponseField name="return" type="Rational">
+  A Rational object containing the conversion result
+</ResponseField>
+
+### When to Use
+
+Use `convertToRational()` when you need:
+- To perform further rational arithmetic operations
+- Internal library operations
+- Custom precision handling
+
+**Note:** For most use cases, prefer `convert()` or `convertToFraction()` instead.
+
+### Rational Class Methods
+
+The Rational object provides the following methods:
+
+- `toNumber()` - Convert to decimal number
+- `toFraction()` - Convert to fraction object
+- `multiply(other: Rational)` - Multiply by another Rational
+- `divide(other: Rational)` - Divide by another Rational
+
+### Examples
+
+#### Basic Usage
+
+```typescript
+import { LengthUnitConverter } from 'univerto/length';
+import { LENGTH_UNIT } from 'univerto/length';
+
+const rational = LengthUnitConverter
+  .from(100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convertToRational();
+
+console.log(rational.toNumber());    // 1
+console.log(rational.toFraction());  // { numerator: 1, denominator: 1 }
+```
+
+#### Rational Arithmetic
+
+```typescript
+import { Rational } from 'univerto/core';
+
+const rational1 = LengthUnitConverter
+  .from(100, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convertToRational();
+
+const rational2 = Rational.fromNumber(2);
+const result = rational1.multiply(rational2);
+
+console.log(result.toNumber()); // 2
+```
+
+---
+
+## Implementation Details
+
+All three methods use the same underlying conversion algorithm:
+
+1. Convert the source value to a Rational number
+2. Calculate the conversion factor from source to target unit
+3. Multiply the rational value by the conversion factor
+4. Format the result according to the method:
+   - `convertToRational()` - Returns the Rational object directly
+   - `convertToFraction()` - Calls `toFraction()` on the Rational
+   - `convert()` - Calls `toNumber()` on the Rational
+
+```typescript
+// Internal implementation
+function convertToRational() {
+  const from = scale[fromUnit];
+  const to = scale[targetUnit];
+  
+  const fromRational = Rational.fromNumber(fromQuantity);
+  const factor = from.divide(to);
+  
+  return fromRational.multiply(factor);
+}
+
+function convertToFraction() {
+  const fromRational = convertToRational();
+  return fromRational.toFraction();
+}
+
+function convert() {
+  const result = convertToRational();
+  return result.toNumber();
+}
+```
+
+---
+
+## See Also
+
+- [Unit Converter API](/api/unit-converter) - Core converter methods
+- [Types & Interfaces](/api/types) - TypeScript type definitions

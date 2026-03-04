@@ -1,0 +1,132 @@
+---
+title: "Time Converter"
+description: "Convert between time units from nanoseconds to decades"
+---
+
+## Overview
+
+The Time converter supports conversions between various time units, from the smallest nanosecond to decades, covering all common time measurement needs.
+
+## Import
+
+```typescript
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+```
+
+## Available Units
+
+The `TIME_UNIT` constant provides the following units:
+
+- `NANOSECOND` - Nanosecond (ns)
+- `MICROSECOND` - Microsecond (µs)
+- `MILLISECOND` - Millisecond (ms)
+- `SECOND` - Second (s)
+- `MINUTE` - Minute (min)
+- `HOUR` - Hour (h)
+- `DAY` - Day (d)
+- `WEEK` - Week (wk)
+- `MONTH` - Month (mo)
+- `YEAR` - Year (yr)
+- `DECADE` - Decade
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+
+// Convert 1 hour to milliseconds
+const milliseconds = TimeUnitConverter.from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert()
+
+console.log(milliseconds) // 3600000
+```
+
+```typescript Minutes to Seconds
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+
+// Convert 5 minutes to seconds
+const seconds = TimeUnitConverter.from(5, TIME_UNIT.MINUTE)
+  .to(TIME_UNIT.SECOND)
+  .convert()
+
+console.log(seconds) // 300
+```
+
+```typescript High Precision
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision using Decimal.js
+const fraction = TimeUnitConverter.from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString()) // "3600000"
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Programming & Performance
+
+```typescript
+// Milliseconds to seconds (execution time)
+const execTime = TimeUnitConverter.from(1500, TIME_UNIT.MILLISECOND)
+  .to(TIME_UNIT.SECOND)
+  .convert() // 1.5
+
+// Nanoseconds to milliseconds (high-res timing)
+const nanoToMs = TimeUnitConverter.from(1_000_000, TIME_UNIT.NANOSECOND)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert() // 1
+
+// Microseconds to milliseconds
+const microToMs = TimeUnitConverter.from(5000, TIME_UNIT.MICROSECOND)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert() // 5
+```
+
+### Daily Time Calculations
+
+```typescript
+// Hours to minutes
+const workMinutes = TimeUnitConverter.from(8, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MINUTE)
+  .convert() // 480
+
+// Days to hours
+const hoursInWeek = TimeUnitConverter.from(7, TIME_UNIT.DAY)
+  .to(TIME_UNIT.HOUR)
+  .convert() // 168
+
+// Weeks to days
+const daysInMonth = TimeUnitConverter.from(4, TIME_UNIT.WEEK)
+  .to(TIME_UNIT.DAY)
+  .convert() // 28
+```
+
+### Long-term Time Periods
+
+```typescript
+// Years to days (approximate)
+const daysInYear = TimeUnitConverter.from(1, TIME_UNIT.YEAR)
+  .to(TIME_UNIT.DAY)
+  .convert() // 365.25
+
+// Decades to years
+const yearsInDecade = TimeUnitConverter.from(2, TIME_UNIT.DECADE)
+  .to(TIME_UNIT.YEAR)
+  .convert() // 20
+
+// Months to days (approximate)
+const monthToDays = TimeUnitConverter.from(6, TIME_UNIT.MONTH)
+  .to(TIME_UNIT.DAY)
+  .convert() // ~182.625
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

@@ -1,0 +1,134 @@
+---
+title: "Mass Converter"
+description: "Convert between mass units from micrograms to long tons"
+---
+
+## Overview
+
+The Mass converter supports conversions between metric and imperial mass/weight units, from tiny micrograms to large tons.
+
+## Import
+
+```typescript
+import { MassUnitConverter, MASS_UNIT } from 'univerto/mass'
+```
+
+## Available Units
+
+The `MASS_UNIT` constant provides the following units:
+
+**Metric Units:**
+- `MICROGRAM` - Microgram (µg)
+- `MILLIGRAM` - Milligram (mg)
+- `GRAM` - Gram (g)
+- `KILOGRAM` - Kilogram (kg)
+- `METRIC_TON` - Metric ton (tonne)
+
+**Imperial/US Units:**
+- `OUNCE` - Ounce (oz)
+- `POUND` - Pound (lb)
+- `STONE` - Stone (st)
+- `SHORT_TON` - Short ton (US ton)
+- `LONG_TON` - Long ton (Imperial ton)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { MassUnitConverter, MASS_UNIT } from 'univerto/mass'
+
+// Convert 10 kilograms to pounds
+const pounds = MassUnitConverter.from(10, MASS_UNIT.KILOGRAM)
+  .to(MASS_UNIT.POUND)
+  .convert()
+
+console.log(pounds) // 22.046...
+```
+
+```typescript Weight Conversion
+import { MassUnitConverter, MASS_UNIT } from 'univerto/mass'
+
+// Convert 150 pounds to kilograms
+const kg = MassUnitConverter.from(150, MASS_UNIT.POUND)
+  .to(MASS_UNIT.KILOGRAM)
+  .convert()
+
+console.log(kg) // 68.039
+```
+
+```typescript High Precision
+import { MassUnitConverter, MASS_UNIT } from 'univerto/mass'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = MassUnitConverter.from(1, MASS_UNIT.METRIC_TON)
+  .to(MASS_UNIT.POUND)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Body Weight Conversions
+
+```typescript
+// Pounds to kilograms (body weight)
+const bodyWeight = MassUnitConverter.from(180, MASS_UNIT.POUND)
+  .to(MASS_UNIT.KILOGRAM)
+  .convert() // 81.647
+
+// Kilograms to pounds
+const weightInPounds = MassUnitConverter.from(70, MASS_UNIT.KILOGRAM)
+  .to(MASS_UNIT.POUND)
+  .convert() // 154.324
+
+// Stone to kilograms (UK weight measurement)
+const stoneToKg = MassUnitConverter.from(12, MASS_UNIT.STONE)
+  .to(MASS_UNIT.KILOGRAM)
+  .convert() // 76.204
+```
+
+### Cooking & Food Measurements
+
+```typescript
+// Grams to ounces (recipe)
+const ounces = MassUnitConverter.from(250, MASS_UNIT.GRAM)
+  .to(MASS_UNIT.OUNCE)
+  .convert() // 8.818
+
+// Ounces to grams
+const grams = MassUnitConverter.from(16, MASS_UNIT.OUNCE)
+  .to(MASS_UNIT.GRAM)
+  .convert() // 453.592
+
+// Pounds to grams (package weight)
+const packageGrams = MassUnitConverter.from(2.5, MASS_UNIT.POUND)
+  .to(MASS_UNIT.GRAM)
+  .convert() // 1133.981
+```
+
+### Heavy Weight & Shipping
+
+```typescript
+// Metric tons to short tons (cargo)
+const shortTons = MassUnitConverter.from(5, MASS_UNIT.METRIC_TON)
+  .to(MASS_UNIT.SHORT_TON)
+  .convert() // 5.512
+
+// Kilograms to pounds (shipping)
+const shippingWeight = MassUnitConverter.from(500, MASS_UNIT.KILOGRAM)
+  .to(MASS_UNIT.POUND)
+  .convert() // 1102.311
+
+// Long tons to metric tons
+const metricTons = MassUnitConverter.from(10, MASS_UNIT.LONG_TON)
+  .to(MASS_UNIT.METRIC_TON)
+  .convert() // 10.161
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

@@ -1,0 +1,119 @@
+---
+title: "Current Converter"
+description: "Convert between electrical current units from milliamperes to kiloamperes"
+---
+
+## Overview
+
+The Current converter supports conversions between electrical current units, from small milliampere measurements to large kiloampere values.
+
+## Import
+
+```typescript
+import { CurrentUnitConverter, CURRENT_UNIT } from 'univerto/current'
+```
+
+## Available Units
+
+The `CURRENT_UNIT` constant provides the following units:
+
+- `MILLIAMPERE` - Milliampere (mA)
+- `AMPERE` - Ampere (A)
+- `KILOAMPERE` - Kiloampere (kA)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { CurrentUnitConverter, CURRENT_UNIT } from 'univerto/current'
+
+// Convert 2500 mA to A
+const amperes = CurrentUnitConverter.from(2500, CURRENT_UNIT.MILLIAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert()
+
+console.log(amperes) // 2.5
+```
+
+```typescript High Current
+import { CurrentUnitConverter, CURRENT_UNIT } from 'univerto/current'
+
+// Convert 15 A to kA
+const kiloamperes = CurrentUnitConverter.from(15, CURRENT_UNIT.AMPERE)
+  .to(CURRENT_UNIT.KILOAMPERE)
+  .convert()
+
+console.log(kiloamperes) // 0.015
+```
+
+```typescript High Precision
+import { CurrentUnitConverter, CURRENT_UNIT } from 'univerto/current'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = CurrentUnitConverter.from(1, CURRENT_UNIT.KILOAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Electronic Devices
+
+```typescript
+// LED current (mA to A)
+const ledCurrent = CurrentUnitConverter.from(20, CURRENT_UNIT.MILLIAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert() // 0.02
+
+// USB charging (A to mA)
+const usbCurrent = CurrentUnitConverter.from(2.4, CURRENT_UNIT.AMPERE)
+  .to(CURRENT_UNIT.MILLIAMPERE)
+  .convert() // 2400
+
+// Phone charger (mA to A)
+const chargerCurrent = CurrentUnitConverter.from(1000, CURRENT_UNIT.MILLIAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert() // 1
+```
+
+### Household & Industrial Applications
+
+```typescript
+// Circuit breaker rating (A to mA)
+const breakerRating = CurrentUnitConverter.from(15, CURRENT_UNIT.AMPERE)
+  .to(CURRENT_UNIT.MILLIAMPERE)
+  .convert() // 15000
+
+// Motor current (A to kA)
+const motorCurrent = CurrentUnitConverter.from(500, CURRENT_UNIT.AMPERE)
+  .to(CURRENT_UNIT.KILOAMPERE)
+  .convert() // 0.5
+
+// Power distribution (kA to A)
+const distributionCurrent = CurrentUnitConverter.from(2.5, CURRENT_UNIT.KILOAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert() // 2500
+```
+
+### Sensor & Measurement Applications
+
+```typescript
+// Sensor signal (mA to A)
+const sensorSignal = CurrentUnitConverter.from(4, CURRENT_UNIT.MILLIAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert() // 0.004
+
+// Current loop (mA standard)
+const currentLoop = CurrentUnitConverter.from(20, CURRENT_UNIT.MILLIAMPERE)
+  .to(CURRENT_UNIT.AMPERE)
+  .convert() // 0.02
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

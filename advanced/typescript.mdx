@@ -1,0 +1,345 @@
+---
+title: "TypeScript Support"
+description: "Fully typed API for TypeScript projects"
+---
+
+## Overview
+
+Univerto is written in TypeScript and provides first-class type definitions out of the box. No separate `@types` package is needed — full type safety is included with every import.
+
+## Type Definitions Included
+
+When you install Univerto, TypeScript type definitions are automatically available:
+
+```typescript
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+// Types are automatically available — no @types package needed
+```
+
+The `package.json` includes type definitions in the exports:
+
+```json
+{
+  "types": "./dist/index.d.cts",
+  "exports": {
+    "./time": {
+      "import": "./dist/units/time.js",
+      "require": "./dist/units/time.cjs"
+    }
+  }
+}
+```
+
+## Type Safety in Conversions
+
+### Unit Type Safety
+
+Each converter enforces type-safe unit constants through TypeScript enums. You cannot pass invalid units:
+
+```typescript
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+
+// ✅ Valid — uses defined TIME_UNIT constants
+const milliseconds = TimeUnitConverter
+  .from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert()
+
+// ❌ Type error — string literals are not allowed
+const invalid = TimeUnitConverter
+  .from(1, 'hour') // Type error: Argument of type 'string' is not assignable
+  .to('millisecond')
+  .convert()
+```
+
+### Autocomplete Support
+
+IDEs with TypeScript support (VS Code, WebStorm, etc.) provide full autocomplete for:
+- Converter methods (`from`, `to`, `convert`, `convertToFraction`)
+- Unit constants (e.g., `TIME_UNIT.HOUR`, `LENGTH_UNIT.METER`)
+- Return types (number, Fraction, Rational)
+
+<video
+  controls
+  className="w-full rounded-lg"
+  src="https://mintlify-assets.b-cdn.net/hero-dark.mp4"
+  alt="TypeScript autocomplete demo"
+/>
+
+<Note>
+The strong typing ensures you catch errors at compile time rather than runtime, making your code more reliable.
+</Note>
+
+## Unit Type Enums
+
+Each converter module exports a unit enum that defines all available units for that category:
+
+```typescript
+// Time units
+import { TIME_UNIT } from 'univerto/time'
+
+TIME_UNIT.NANOSECOND
+TIME_UNIT.MICROSECOND
+TIME_UNIT.MILLISECOND
+TIME_UNIT.SECOND
+TIME_UNIT.MINUTE
+TIME_UNIT.HOUR
+TIME_UNIT.DAY
+TIME_UNIT.WEEK
+TIME_UNIT.MONTH
+TIME_UNIT.YEAR
+TIME_UNIT.DECADE
+```
+
+```typescript
+// Length units
+import { LENGTH_UNIT } from 'univerto/length'
+
+LENGTH_UNIT.NANOMETER
+LENGTH_UNIT.MICROMETER
+LENGTH_UNIT.MILLIMETER
+LENGTH_UNIT.CENTIMETER
+LENGTH_UNIT.METER
+LENGTH_UNIT.KILOMETER
+// ... and more
+```
+
+### Unit Type Definition
+
+Each unit enum is typed as a string literal union:
+
+```typescript
+// Simplified representation of the TIME_UNIT type
+type TimeUnit = 
+  | 'NANOSECOND'
+  | 'MICROSECOND'
+  | 'MILLISECOND'
+  | 'SECOND'
+  | 'MINUTE'
+  | 'HOUR'
+  | 'DAY'
+  | 'WEEK'
+  | 'MONTH'
+  | 'YEAR'
+  | 'DECADE'
+```
+
+This provides excellent IntelliSense support and compile-time validation.
+
+## Generic Types in Converters
+
+Univerto's converter implementation uses TypeScript generics to ensure type safety across different unit systems. Here's how the internal architecture works:
+
+```typescript
+// Simplified version of the createPreciseConverter implementation
+function createPreciseConverter<S extends Record<string, Rational>, Unit extends keyof S>(
+  scale: S
+) {
+  function from(fromQuantity: number, fromUnit: Unit) {
+    function to(targetUnit: Unit) {
+      function convert(): number { /* ... */ }
+      function convertToFraction(): Fraction { /* ... */ }
+      function convertToRational(): Rational { /* ... */ }
+      
+      return { convert, convertToFraction, convertToRational }
+    }
+    
+    return { to }
+  }
+  
+  return { from }
+}
+```
+
+The generic types ensure that:
+- `fromUnit` and `targetUnit` must be valid keys from the scale object
+- Type inference propagates through the method chain
+- Invalid units are caught at compile time
+
+## Return Types
+
+### `convert()` Method
+
+Returns a `number`:
+
+```typescript
+const result: number = TimeUnitConverter
+  .from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.SECOND)
+  .convert()
+```
+
+### `convertToFraction()` Method
+
+Returns a `Fraction` object:
+
+```typescript
+interface Fraction {
+  numerator: number
+  denominator: number
+}
+
+const fraction: Fraction = TimeUnitConverter
+  .from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.SECOND)
+  .convertToFraction()
+
+console.log(fraction.numerator)    // 3600
+console.log(fraction.denominator)  // 1
+```
+
+### `convertToRational()` Method
+
+Returns a `Rational` object with methods for fraction arithmetic:
+
+```typescript
+const rational: Rational = TimeUnitConverter
+  .from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.SECOND)
+  .convertToRational()
+
+// Rational has methods: multiply, divide, add, subtract, toNumber, toFraction
+```
+
+## Type Exports
+
+You can import types directly for use in your own code:
+
+```typescript
+// Import types
+import type { TimeUnit } from 'univerto/time'
+import type { LengthUnit } from 'univerto/length'
+
+// Use in function signatures
+function formatTime(value: number, unit: TimeUnit): string {
+  return `${value} ${unit.toLowerCase()}`
+}
+
+function convertDistance(value: number, from: LengthUnit, to: LengthUnit) {
+  // Implementation
+}
+```
+
+<Tip>
+Using `import type` ensures the import is erased at runtime, keeping your bundle size minimal.
+</Tip>
+
+## Integration Examples
+
+### React Component with TypeScript
+
+```typescript
+import { useState } from 'react'
+import { TimeUnitConverter, TIME_UNIT, type TimeUnit } from 'univerto/time'
+
+interface TimeConverterProps {
+  defaultUnit?: TimeUnit
+}
+
+export function TimeConverter({ defaultUnit = TIME_UNIT.SECOND }: TimeConverterProps) {
+  const [value, setValue] = useState<number>(0)
+  const [unit, setUnit] = useState<TimeUnit>(defaultUnit)
+  
+  const milliseconds = TimeUnitConverter
+    .from(value, unit)
+    .to(TIME_UNIT.MILLISECOND)
+    .convert()
+  
+  return (
+    <div>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => setValue(Number(e.target.value))}
+      />
+      <select
+        value={unit}
+        onChange={(e) => setUnit(e.target.value as TimeUnit)}
+      >
+        <option value={TIME_UNIT.SECOND}>Seconds</option>
+        <option value={TIME_UNIT.MINUTE}>Minutes</option>
+        <option value={TIME_UNIT.HOUR}>Hours</option>
+      </select>
+      <p>{milliseconds} milliseconds</p>
+    </div>
+  )
+}
+```
+
+### Type-Safe Utility Functions
+
+```typescript
+import { LengthUnitConverter, LENGTH_UNIT, type LengthUnit } from 'univerto/length'
+
+function formatLength(value: number, unit: LengthUnit): string {
+  const meters = LengthUnitConverter
+    .from(value, unit)
+    .to(LENGTH_UNIT.METER)
+    .convert()
+  
+  if (meters < 1) {
+    return `${meters * 100} cm`
+  } else if (meters >= 1000) {
+    return `${meters / 1000} km`
+  }
+  return `${meters} m`
+}
+
+// Type-safe function call
+formatLength(1000, LENGTH_UNIT.MILLIMETER) // "100 cm"
+formatLength(5000, LENGTH_UNIT.METER)      // "5 km"
+
+// Type error caught at compile time
+formatLength(100, "invalid")  // ❌ Type error
+```
+
+## TypeScript Configuration Recommendations
+
+For optimal type-checking with Univerto, use these `tsconfig.json` settings:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,              // Enable all strict type checks
+    "moduleResolution": "node",  // Standard Node.js module resolution
+    "esModuleInterop": true,     // Better CommonJS/ESM interop
+    "skipLibCheck": true,        // Skip type checking of declaration files
+    "resolveJsonModule": true,   // Allow importing package.json
+    "target": "ES2020",          // Modern JavaScript target
+    "module": "ESNext",          // Use latest module syntax
+    "lib": ["ES2020"]            // Include ES2020 features
+  }
+}
+```
+
+<Info>
+Univerto requires Node.js ≥18.0.0, which supports modern JavaScript features like ES2020.
+</Info>
+
+## Benefits of Full Type Safety
+
+<CardGroup cols={2}>
+  <Card title="Catch Errors Early" icon="shield-check">
+    TypeScript catches invalid units and incorrect method usage at compile time
+  </Card>
+  <Card title="Better IDE Support" icon="wand-magic-sparkles">
+    Full autocomplete and inline documentation in your editor
+  </Card>
+  <Card title="Self-Documenting Code" icon="book-open">
+    Types serve as inline documentation for available units and methods
+  </Card>
+  <Card title="Refactoring Confidence" icon="arrows-rotate">
+    Rename and restructure with confidence — the compiler catches breaking changes
+  </Card>
+</CardGroup>
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api/unit-converter">
+    Explore the complete API documentation
+  </Card>
+  <Card title="Tree-Shaking" icon="filter" href="/advanced/tree-shaking">
+    Learn about bundle optimization
+  </Card>
+</CardGroup>

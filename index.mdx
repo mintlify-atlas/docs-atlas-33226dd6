@@ -1,97 +1,189 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Univerto Documentation"
+description: "Lightweight, zero-dependency unit converter with type-safe API and precise calculations"
+mode: "custom"
 ---
 
-## Setting up
+<div className="relative overflow-hidden bg-gradient-to-br from-[#020627] via-[#11161e] to-[#020627] dark:from-[#020627] dark:via-[#11161e] dark:to-[#020627] py-20 px-4 sm:px-6 lg:px-8">
+  <div className="relative max-w-7xl mx-auto">
+    <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white dark:text-white mb-6">
+          Precise Unit Conversions for TypeScript
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-300 dark:text-gray-300 max-w-2xl mb-8">
+          Zero-dependency library with a fluent API and fraction-based precision. Convert between 10 unit categories without floating point errors.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a
+            href="/quickstart"
+            className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-[#848c8e] hover:bg-[#9a9ea0] rounded-lg transition-colors no-underline"
+          >
+            Get Started
+          </a>
+          <a
+            href="/api/unit-converter"
+            className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/30 rounded-lg transition-colors no-underline"
+          >
+            API Reference
+          </a>
+        </div>
+      </div>
+      <div className="hidden lg:block lg:col-span-5 mt-12 lg:mt-0">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#848c8e]/20 to-[#cfd0d2]/20 blur-3xl"></div>
+          <div className="relative bg-[rgba(48,54,79,1)] dark:bg-[rgba(48,54,79,1)] border border-[rgba(96,99,146,1)] dark:border-[rgba(96,99,146,1)] rounded-xl p-6 shadow-2xl">
+            <div className="text-sm text-gray-300 dark:text-gray-300 mb-2 font-mono">TypeScript</div>
+            <pre className="text-sm text-gray-100 dark:text-gray-100 overflow-x-auto">
+              <code>{`import { TimeUnitConverter, TIME_UNIT } 
+from 'univerto/time'
 
-Get your documentation site up and running in minutes.
+// Convert 1 hour to milliseconds
+const ms = TimeUnitConverter
+  .from(1, TIME_UNIT.HOUR)
+  .to(TIME_UNIT.MILLISECOND)
+  .convert()
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+console.log(ms) // 3,600,000`}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-## Make it yours
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Quick Start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Get up and running with Univerto in three simple steps
+  </p>
+  
+  <Steps>
+    <Step title="Install the package">
+      Add Univerto to your project using your preferred package manager:
+      
+      <CodeGroup>
+      ```bash npm
+      npm install univerto
+      ```
+      ```bash yarn
+      yarn add univerto
+      ```
+      ```bash pnpm
+      pnpm add univerto
+      ```
+      </CodeGroup>
+    </Step>
+    
+    <Step title="Import a converter">
+      Univerto provides modular exports for optimal tree-shaking. Import only what you need:
+      
+      ```typescript
+      import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+      ```
+      
+      <Info>Each unit category has its own export path (e.g., `univerto/length`, `univerto/mass`) to keep your bundle size minimal.</Info>
+    </Step>
+    
+    <Step title="Convert units">
+      Use the fluent API to perform conversions with a clear, readable syntax:
+      
+      ```typescript
+      const result = TimeUnitConverter
+        .from(24, TIME_UNIT.HOUR)
+        .to(TIME_UNIT.DAY)
+        .convert()
+      
+      console.log(result) // 1
+      ```
+      
+      <Tip>The conversion engine uses fraction-based calculations internally, avoiding floating point precision issues common in JavaScript.</Tip>
+    </Step>
+  </Steps>
+</div>
 
-Design a docs site that looks great and empowers your users.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Key Features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Built for modern TypeScript applications with precision and performance in mind
+  </p>
+  
+  <CardGroup cols={2}>
+    <Card title="Zero Dependencies" icon="feather" href="/installation">
+      Minimal bundle size with no external dependencies. Tree-shakeable exports ensure you only ship what you use.
+    </Card>
+    <Card title="Type-Safe" icon="shield-check" href="/advanced/typescript">
+      Full TypeScript support with strict type definitions. Catch conversion errors at compile time.
+    </Card>
+    <Card title="Precise Calculations" icon="calculator" href="/concepts/precision">
+      Fraction-based arithmetic eliminates floating point errors. Get exact results every time.
+    </Card>
+    <Card title="Fluent API" icon="code" href="/concepts/fluent-api">
+      Chainable methods create readable conversion pipelines. Write code that's self-documenting.
+    </Card>
+  </CardGroup>
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Explore Unit Converters
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Convert between units across 10 different categories
+  </p>
+  
+  <CardGroup cols={3}>
+    <Card title="Length" icon="ruler" href="/converters/length">
+      Nanometers to miles and everything in between
+    </Card>
+    <Card title="Area" icon="border-all" href="/converters/area">
+      Square millimeters to acres and square miles
+    </Card>
+    <Card title="Volume" icon="cube" href="/converters/volume">
+      Milliliters to gallons and cubic meters
+    </Card>
+    <Card title="Mass" icon="weight-hanging" href="/converters/mass">
+      Micrograms to metric tons and pounds
+    </Card>
+    <Card title="Time" icon="clock" href="/converters/time">
+      Nanoseconds to decades and years
+    </Card>
+    <Card title="Speed" icon="gauge-high" href="/converters/speed">
+      Meters per second to miles per hour
+    </Card>
+    <Card title="Data" icon="database" href="/converters/data">
+      Bits to petabytes and exabytes
+    </Card>
+    <Card title="Voltage" icon="bolt" href="/converters/voltage">
+      Millivolts to megavolts
+    </Card>
+    <Card title="Current" icon="wave-square" href="/converters/current">
+      Milliamperes to kiloamperes
+    </Card>
+    <Card title="Frequency" icon="wave-pulse" href="/converters/frequency">
+      Hertz to gigahertz and RPM
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="bg-[rgba(48,54,79,1)] dark:bg-[rgba(48,54,79,1)] border border-[rgba(96,99,146,1)] dark:border-[rgba(96,99,146,1)] rounded-2xl p-8 sm:p-12 text-center">
+    <h2 className="text-2xl sm:text-3xl font-bold text-white dark:text-white mb-4">
+      Ready to start converting?
+    </h2>
+    <p className="text-lg text-gray-300 dark:text-gray-300 max-w-2xl mx-auto mb-8">
+      Install Univerto today and eliminate floating point errors from your unit conversions
+    </p>
+    <a
+      href="/quickstart"
+      className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-[#848c8e] hover:bg-[#9a9ea0] rounded-lg transition-colors no-underline"
+    >
+      Get Started Now
+    </a>
+  </div>
+</div>

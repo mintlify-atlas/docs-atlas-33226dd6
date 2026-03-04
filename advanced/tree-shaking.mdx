@@ -1,0 +1,247 @@
+---
+title: "Tree-Shaking & Bundle Size"
+description: "Optimize your bundle with modular imports"
+---
+
+## Overview
+
+Univerto is designed from the ground up for optimal tree-shaking. The library uses a modular export structure that allows modern bundlers to eliminate unused code, ensuring you only ship what you use.
+
+## Modular Export Structure
+
+Univerto provides separate export paths for each unit converter instead of a single monolithic import. This architecture enables bundlers to perform effective dead code elimination.
+
+### Available Export Paths
+
+Each converter has its own subpath export:
+
+```typescript
+// Time units
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+
+// Length units
+import { LengthUnitConverter, LENGTH_UNIT } from 'univerto/length'
+
+// Area units
+import { AreaUnitConverter, AREA_UNIT } from 'univerto/area'
+
+// Volume units
+import { VolumeUnitConverter, VOLUME_UNIT } from 'univerto/volume'
+
+// Mass units
+import { MassUnitConverter, MASS_UNIT } from 'univerto/mass'
+
+// Speed units
+import { SpeedUnitConverter, SPEED_UNIT } from 'univerto/speed'
+
+// Data units
+import { DataUnitConverter, DATA_UNIT } from 'univerto/data'
+
+// Voltage units
+import { VoltageUnitConverter, VOLTAGE_UNIT } from 'univerto/voltage'
+
+// Current units
+import { CurrentUnitConverter, CURRENT_UNIT } from 'univerto/current'
+
+// Frequency units
+import { FrequencyUnitConverter, FREQUENCY_UNIT } from 'univerto/frequency'
+```
+
+## Bundle Size Impact
+
+### ❌ Avoid Barrel Imports
+
+Don't import from the main entry point if you only need specific converters:
+
+```typescript
+// This imports ALL converters (not recommended)
+import { TimeUnitConverter, LengthUnitConverter } from 'univerto'
+```
+
+### ✅ Use Specific Imports
+
+Import only what you need from subpaths:
+
+```typescript
+// This imports ONLY the time converter (recommended)
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time'
+```
+
+### Bundle Size Comparison
+
+| Import Strategy | Approximate Bundle Size |
+|----------------|------------------------|
+| Single converter (e.g., `univerto/time`) | ~2-3 KB (minified + gzipped) |
+| Three converters (e.g., time, length, mass) | ~6-8 KB (minified + gzipped) |
+| All converters via barrel import | ~15-20 KB (minified + gzipped) |
+
+<Note>
+Exact bundle sizes depend on your bundler configuration and which converters you import. The library itself has **zero dependencies**, so there are no transitive dependency costs.
+</Note>
+
+## How It Works
+
+Univerto's `package.json` defines explicit [export maps](https://nodejs.org/api/packages.html#exports) for each converter:
+
+```json
+{
+  "exports": {
+    "./time": {
+      "import": "./dist/units/time.js",
+      "require": "./dist/units/time.cjs"
+    },
+    "./length": {
+      "import": "./dist/units/length.js",
+      "require": "./dist/units/length.cjs"
+    }
+    // ... other converters
+  }
+}
+```
+
+Modern bundlers (Webpack 5+, Vite, Rollup, esbuild) respect these export maps and can:
+1. Resolve the exact file for each subpath
+2. Analyze which files are actually imported
+3. Eliminate code from unused files during the build
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Import by subpath" icon="code">
+    Always use specific subpath imports like `univerto/time` rather than the main `univerto` entry
+  </Card>
+  <Card title="Import only what you need" icon="filter">
+    If your app only converts time units, only import the time converter
+  </Card>
+  <Card title="Use named imports" icon="brackets-curly">
+    Use `import { TimeUnitConverter }` rather than `import *` to help bundlers identify used exports
+  </Card>
+  <Card title="Check bundle analyzer" icon="chart-simple">
+    Use tools like webpack-bundle-analyzer to verify Univerto's size in your production bundle
+  </Card>
+</CardGroup>
+
+## Bundler Configuration
+
+### Vite
+
+Vite supports tree-shaking out of the box with ES modules. No configuration needed:
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  build: {
+    minify: 'terser', // or 'esbuild'
+    // Tree-shaking is automatic with ES modules
+  }
+})
+```
+
+### Webpack 5
+
+Webpack 5 has improved tree-shaking with the `sideEffects` flag. Univerto sets `"sideEffects": false` in its `package.json`, indicating all modules are safe to tree-shake:
+
+```javascript
+// webpack.config.js
+module.exports = {
+  mode: 'production',
+  optimization: {
+    usedExports: true, // Enable tree-shaking
+    minimize: true
+  }
+}
+```
+
+### Rollup
+
+Rollup excels at tree-shaking ES modules:
+
+```javascript
+// rollup.config.js
+import { terser } from 'rollup-plugin-terser'
+
+export default {
+  plugins: [
+    terser() // Minification removes dead code
+  ],
+  // Tree-shaking is automatic
+}
+```
+
+### esbuild
+
+esbuild performs tree-shaking automatically:
+
+```javascript
+// build.js
+require('esbuild').build({
+  entryPoints: ['src/index.ts'],
+  bundle: true,
+  minify: true,
+  treeShaking: true // Default is true
+})
+```
+
+## Verifying Tree-Shaking
+
+### Using Webpack Bundle Analyzer
+
+```bash
+npm install --save-dev webpack-bundle-analyzer
+```
+
+```javascript
+// webpack.config.js
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
+module.exports = {
+  plugins: [
+    new BundleAnalyzerPlugin()
+  ]
+}
+```
+
+After building, check the visualization to ensure only the converters you imported are included.
+
+### Using Rollup Plugin Visualizer
+
+```bash
+npm install --save-dev rollup-plugin-visualizer
+```
+
+```javascript
+// rollup.config.js
+import { visualizer } from 'rollup-plugin-visualizer'
+
+export default {
+  plugins: [
+    visualizer({ open: true })
+  ]
+}
+```
+
+## Zero Dependencies Advantage
+
+Univerto has **zero runtime dependencies**. This means:
+- No dependency tree to manage
+- No transitive dependency security vulnerabilities
+- No version conflicts with your other packages
+- Smaller total bundle size
+- Faster npm install times
+
+<Tip>
+The zero-dependency approach combined with modular exports makes Univerto one of the most bundle-size-friendly unit conversion libraries available.
+</Tip>
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Learn how to install Univerto
+  </Card>
+  <Card title="TypeScript Support" icon="code" href="/advanced/typescript">
+    Explore TypeScript integration and type safety
+  </Card>
+</CardGroup>

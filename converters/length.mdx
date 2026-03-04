@@ -1,0 +1,123 @@
+---
+title: "Length Converter"
+description: "Convert between length units from nanometers to leagues"
+---
+
+## Overview
+
+The Length converter supports conversions between metric and imperial length units, from the smallest nanometer to the largest league measurement.
+
+## Import
+
+```typescript
+import { LengthUnitConverter, LENGTH_UNIT } from 'univerto/length'
+```
+
+## Available Units
+
+The `LENGTH_UNIT` constant provides the following units:
+
+**Metric Units:**
+- `NANOMETER` - Nanometer
+- `MICROMETER` - Micrometer
+- `MILLIMETER` - Millimeter
+- `CENTIMETER` - Centimeter
+- `METER` - Meter
+- `KILOMETER` - Kilometer
+
+**Imperial/US Units:**
+- `INCH` - Inch
+- `HAND` - Hand (4 inches)
+- `FOOT` - Foot
+- `YARD` - Yard
+- `CHAIN` - Chain
+- `FURLONG` - Furlong
+- `MILE` - Mile
+- `LEAGUE` - League
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { LengthUnitConverter, LENGTH_UNIT } from 'univerto/length'
+
+// Convert 5 kilometers to miles
+const miles = LengthUnitConverter.from(5, LENGTH_UNIT.KILOMETER)
+  .to(LENGTH_UNIT.MILE)
+  .convert()
+
+console.log(miles) // 3.106855...
+```
+
+```typescript Meters to Feet
+import { LengthUnitConverter, LENGTH_UNIT } from 'univerto/length'
+
+// Convert 100 meters to feet
+const feet = LengthUnitConverter.from(100, LENGTH_UNIT.METER)
+  .to(LENGTH_UNIT.FOOT)
+  .convert()
+
+console.log(feet) // 328.084
+```
+
+```typescript High Precision
+import { LengthUnitConverter, LENGTH_UNIT } from 'univerto/length'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision using Decimal.js
+const fraction = LengthUnitConverter.from(1, LENGTH_UNIT.MILE)
+  .to(LENGTH_UNIT.METER)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString()) // Precise conversion
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Metric Conversions
+
+```typescript
+// Centimeters to meters
+const meters = LengthUnitConverter.from(150, LENGTH_UNIT.CENTIMETER)
+  .to(LENGTH_UNIT.METER)
+  .convert() // 1.5
+
+// Millimeters to kilometers
+const km = LengthUnitConverter.from(1_000_000, LENGTH_UNIT.MILLIMETER)
+  .to(LENGTH_UNIT.KILOMETER)
+  .convert() // 1
+```
+
+### Imperial Conversions
+
+```typescript
+// Inches to feet
+const feet = LengthUnitConverter.from(36, LENGTH_UNIT.INCH)
+  .to(LENGTH_UNIT.FOOT)
+  .convert() // 3
+
+// Yards to miles
+const miles = LengthUnitConverter.from(1760, LENGTH_UNIT.YARD)
+  .to(LENGTH_UNIT.MILE)
+  .convert() // 1
+```
+
+### Cross-System Conversions
+
+```typescript
+// Feet to meters (height)
+const heightInMeters = LengthUnitConverter.from(6, LENGTH_UNIT.FOOT)
+  .to(LENGTH_UNIT.METER)
+  .convert() // 1.8288
+
+// Kilometers to miles (distance)
+const distanceInMiles = LengthUnitConverter.from(42.195, LENGTH_UNIT.KILOMETER)
+  .to(LENGTH_UNIT.MILE)
+  .convert() // 26.219 (marathon distance)
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

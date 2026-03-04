@@ -1,0 +1,138 @@
+---
+title: "Volume Converter"
+description: "Convert between volume units from cubic millimeters to gigaliters"
+---
+
+## Overview
+
+The Volume converter supports conversions between metric, imperial, and US customary volume units, including cubic measurements, liters, gallons, and cooking measurements.
+
+## Import
+
+```typescript
+import { VolumeUnitConverter, VOLUME_UNIT } from 'univerto/volume'
+```
+
+## Available Units
+
+The `VOLUME_UNIT` constant provides the following units:
+
+**Metric Units:**
+- `CUBIC_MILLIMETER` - Cubic millimeter
+- `CUBIC_CENTIMETER` - Cubic centimeter
+- `CUBIC_METER` - Cubic meter
+- `CUBIC_KILOMETER` - Cubic kilometer
+- `MILLILITER` - Milliliter
+- `LITER` - Liter
+- `KILOLITER` - Kiloliter
+- `MEGALITER` - Megaliter
+- `GIGALITER` - Gigaliter
+
+**Imperial/US Units:**
+- `CUBIC_INCH` - Cubic inch
+- `CUBIC_FOOT` - Cubic foot
+- `CUBIC_YARD` - Cubic yard
+- `TEASPOON` - Teaspoon
+- `TABLESPOON` - Tablespoon
+- `FLUID_OUNCE` - Fluid ounce
+- `CUP` - Cup
+- `PINT` - Pint
+- `QUART` - Quart
+- `GALLON` - Gallon
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { VolumeUnitConverter, VOLUME_UNIT } from 'univerto/volume'
+
+// Convert 5 liters to gallons
+const gallons = VolumeUnitConverter.from(5, VOLUME_UNIT.LITER)
+  .to(VOLUME_UNIT.GALLON)
+  .convert()
+
+console.log(gallons) // 1.321...
+```
+
+```typescript Cooking Measurements
+import { VolumeUnitConverter, VOLUME_UNIT } from 'univerto/volume'
+
+// Convert 250 milliliters to cups
+const cups = VolumeUnitConverter.from(250, VOLUME_UNIT.MILLILITER)
+  .to(VOLUME_UNIT.CUP)
+  .convert()
+
+console.log(cups) // 1.057
+```
+
+```typescript High Precision
+import { VolumeUnitConverter, VOLUME_UNIT } from 'univerto/volume'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = VolumeUnitConverter.from(1, VOLUME_UNIT.GALLON)
+  .to(VOLUME_UNIT.LITER)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Cooking & Recipe Conversions
+
+```typescript
+// Teaspoons to tablespoons
+const tbsp = VolumeUnitConverter.from(6, VOLUME_UNIT.TEASPOON)
+  .to(VOLUME_UNIT.TABLESPOON)
+  .convert() // 2
+
+// Cups to milliliters
+const ml = VolumeUnitConverter.from(2, VOLUME_UNIT.CUP)
+  .to(VOLUME_UNIT.MILLILITER)
+  .convert() // 473.176
+
+// Fluid ounces to milliliters
+const milliliters = VolumeUnitConverter.from(8, VOLUME_UNIT.FLUID_OUNCE)
+  .to(VOLUME_UNIT.MILLILITER)
+  .convert() // 236.588
+```
+
+### Liquid Measurements
+
+```typescript
+// Liters to gallons (fuel)
+const fuelGallons = VolumeUnitConverter.from(50, VOLUME_UNIT.LITER)
+  .to(VOLUME_UNIT.GALLON)
+  .convert() // 13.209
+
+// Gallons to liters
+const fuelLiters = VolumeUnitConverter.from(10, VOLUME_UNIT.GALLON)
+  .to(VOLUME_UNIT.LITER)
+  .convert() // 37.854
+
+// Pints to liters
+const pintToLiter = VolumeUnitConverter.from(4, VOLUME_UNIT.PINT)
+  .to(VOLUME_UNIT.LITER)
+  .convert() // 1.893
+```
+
+### Large Volume Measurements
+
+```typescript
+// Cubic meters to cubic feet
+const cubicFeet = VolumeUnitConverter.from(100, VOLUME_UNIT.CUBIC_METER)
+  .to(VOLUME_UNIT.CUBIC_FOOT)
+  .convert() // 3531.467
+
+// Kiloliters to gallons (tank capacity)
+const tankGallons = VolumeUnitConverter.from(5, VOLUME_UNIT.KILOLITER)
+  .to(VOLUME_UNIT.GALLON)
+  .convert() // 1320.86
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

@@ -1,0 +1,123 @@
+---
+title: "Speed Converter"
+description: "Convert between speed units from millimeters per hour to knots"
+---
+
+## Overview
+
+The Speed converter supports conversions between various velocity and speed units used in different contexts, from scientific measurements to everyday travel speeds.
+
+## Import
+
+```typescript
+import { SpeedUnitConverter, SPEED_UNIT } from 'univerto/speed'
+```
+
+## Available Units
+
+The `SPEED_UNIT` constant provides the following units:
+
+- `METER_PER_SECOND` - Meter per second (m/s)
+- `MILLIMETER_PER_HOUR` - Millimeter per hour (mm/h)
+- `KILOMETER_PER_HOUR` - Kilometer per hour (km/h)
+- `MILE_PER_HOUR` - Mile per hour (mph)
+- `KNOT` - Knot (nautical mile per hour)
+- `FOOT_PER_SECOND` - Foot per second (ft/s)
+- `INCH_PER_HOUR` - Inch per hour (in/h)
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { SpeedUnitConverter, SPEED_UNIT } from 'univerto/speed'
+
+// Convert 100 km/h to mph
+const mph = SpeedUnitConverter.from(100, SPEED_UNIT.KILOMETER_PER_HOUR)
+  .to(SPEED_UNIT.MILE_PER_HOUR)
+  .convert()
+
+console.log(mph) // 62.137...
+```
+
+```typescript Meters per Second
+import { SpeedUnitConverter, SPEED_UNIT } from 'univerto/speed'
+
+// Convert 30 m/s to km/h
+const kmh = SpeedUnitConverter.from(30, SPEED_UNIT.METER_PER_SECOND)
+  .to(SPEED_UNIT.KILOMETER_PER_HOUR)
+  .convert()
+
+console.log(kmh) // 108
+```
+
+```typescript High Precision
+import { SpeedUnitConverter, SPEED_UNIT } from 'univerto/speed'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = SpeedUnitConverter.from(60, SPEED_UNIT.MILE_PER_HOUR)
+  .to(SPEED_UNIT.KILOMETER_PER_HOUR)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Vehicle Speeds
+
+```typescript
+// Highway speed limit (mph to km/h)
+const speedLimit = SpeedUnitConverter.from(65, SPEED_UNIT.MILE_PER_HOUR)
+  .to(SPEED_UNIT.KILOMETER_PER_HOUR)
+  .convert() // 104.607
+
+// Speed camera reading (km/h to mph)
+const cameraSpeed = SpeedUnitConverter.from(120, SPEED_UNIT.KILOMETER_PER_HOUR)
+  .to(SPEED_UNIT.MILE_PER_HOUR)
+  .convert() // 74.565
+
+// Track speed (m/s to km/h)
+const trackSpeed = SpeedUnitConverter.from(25, SPEED_UNIT.METER_PER_SECOND)
+  .to(SPEED_UNIT.KILOMETER_PER_HOUR)
+  .convert() // 90
+```
+
+### Aviation & Maritime
+
+```typescript
+// Aircraft speed (knots to km/h)
+const aircraftSpeed = SpeedUnitConverter.from(450, SPEED_UNIT.KNOT)
+  .to(SPEED_UNIT.KILOMETER_PER_HOUR)
+  .convert() // 833.4
+
+// Ship speed (knots to mph)
+const shipSpeed = SpeedUnitConverter.from(25, SPEED_UNIT.KNOT)
+  .to(SPEED_UNIT.MILE_PER_HOUR)
+  .convert() // 28.769
+
+// Cruise speed (mph to knots)
+const cruiseSpeed = SpeedUnitConverter.from(500, SPEED_UNIT.MILE_PER_HOUR)
+  .to(SPEED_UNIT.KNOT)
+  .convert() // 434.524
+```
+
+### Scientific Measurements
+
+```typescript
+// Meters per second to feet per second
+const mpsToFps = SpeedUnitConverter.from(10, SPEED_UNIT.METER_PER_SECOND)
+  .to(SPEED_UNIT.FOOT_PER_SECOND)
+  .convert() // 32.808
+
+// Feet per second to meters per second
+const fpsToMps = SpeedUnitConverter.from(100, SPEED_UNIT.FOOT_PER_SECOND)
+  .to(SPEED_UNIT.METER_PER_SECOND)
+  .convert() // 30.48
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.

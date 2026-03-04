@@ -1,0 +1,118 @@
+---
+title: "Area Converter"
+description: "Convert between area units from square millimeters to square miles"
+---
+
+## Overview
+
+The Area converter supports conversions between metric and imperial area units, covering everything from square millimeters to square miles.
+
+## Import
+
+```typescript
+import { AreaUnitConverter, AREA_UNIT } from 'univerto/area'
+```
+
+## Available Units
+
+The `AREA_UNIT` constant provides the following units:
+
+**Metric Units:**
+- `SQUARE_MILLIMETER` - Square millimeter
+- `SQUARE_CENTIMETER` - Square centimeter
+- `SQUARE_METER` - Square meter
+- `HECTARE` - Hectare
+- `SQUARE_KILOMETER` - Square kilometer
+
+**Imperial/US Units:**
+- `SQUARE_INCH` - Square inch
+- `SQUARE_FOOT` - Square foot
+- `ACRE` - Acre
+- `SQUARE_MILE` - Square mile
+
+## Usage
+
+<CodeGroup>
+```typescript Basic Conversion
+import { AreaUnitConverter, AREA_UNIT } from 'univerto/area'
+
+// Convert 100 square meters to square feet
+const sqft = AreaUnitConverter.from(100, AREA_UNIT.SQUARE_METER)
+  .to(AREA_UNIT.SQUARE_FOOT)
+  .convert()
+
+console.log(sqft) // 1076.391...
+```
+
+```typescript Land Area
+import { AreaUnitConverter, AREA_UNIT } from 'univerto/area'
+
+// Convert 5 acres to hectares
+const hectares = AreaUnitConverter.from(5, AREA_UNIT.ACRE)
+  .to(AREA_UNIT.HECTARE)
+  .convert()
+
+console.log(hectares) // 2.023...
+```
+
+```typescript High Precision
+import { AreaUnitConverter, AREA_UNIT } from 'univerto/area'
+import { Decimal } from 'decimal.js'
+
+// Convert with high precision
+const fraction = AreaUnitConverter.from(1, AREA_UNIT.SQUARE_KILOMETER)
+  .to(AREA_UNIT.SQUARE_MILE)
+  .convertToFraction()
+
+const result = new Decimal(fraction.numerator).div(fraction.denominator)
+console.log(result.toString())
+```
+</CodeGroup>
+
+## Common Conversions
+
+### Real Estate Measurements
+
+```typescript
+// House floor area (square feet to square meters)
+const floorArea = AreaUnitConverter.from(2000, AREA_UNIT.SQUARE_FOOT)
+  .to(AREA_UNIT.SQUARE_METER)
+  .convert() // 185.806
+
+// Room size (square meters to square feet)
+const roomSize = AreaUnitConverter.from(25, AREA_UNIT.SQUARE_METER)
+  .to(AREA_UNIT.SQUARE_FOOT)
+  .convert() // 269.098
+```
+
+### Land Measurements
+
+```typescript
+// Farm land (acres to hectares)
+const farmLand = AreaUnitConverter.from(100, AREA_UNIT.ACRE)
+  .to(AREA_UNIT.HECTARE)
+  .convert() // 40.469
+
+// Property size (hectares to square meters)
+const propertySize = AreaUnitConverter.from(2.5, AREA_UNIT.HECTARE)
+  .to(AREA_UNIT.SQUARE_METER)
+  .convert() // 25000
+```
+
+### Geographic Areas
+
+```typescript
+// City area (square kilometers to square miles)
+const cityArea = AreaUnitConverter.from(500, AREA_UNIT.SQUARE_KILOMETER)
+  .to(AREA_UNIT.SQUARE_MILE)
+  .convert() // 193.051
+
+// Country area (square miles to square kilometers)
+const countryArea = AreaUnitConverter.from(10000, AREA_UNIT.SQUARE_MILE)
+  .to(AREA_UNIT.SQUARE_KILOMETER)
+  .convert() // 25899.881
+```
+
+## API Reference
+
+For detailed API documentation, see the [API Reference](/api/unit-converter) page.
