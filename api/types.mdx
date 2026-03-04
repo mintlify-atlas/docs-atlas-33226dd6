@@ -299,25 +299,21 @@ function createPreciseConverter<
 
 ### How It Works
 
+The `createPreciseConverter` function and `Rational` class are internal utilities used by Univerto to create all the unit converters. They ensure type safety across the conversion methods.
+
+The generic types guarantee that:
+- `fromUnit` and `targetUnit` must be valid keys from the scale object
+- Type inference propagates through the method chain
+- Invalid units are caught at compile time
+
+This is why you get full TypeScript autocomplete and type checking when using any converter:
+
 ```typescript
-import { createPreciseConverter } from 'univerto/core';
-import { Rational } from 'univerto/core';
+import { TimeUnitConverter, TIME_UNIT } from 'univerto/time';
 
-// Define a scale
-const myScale = {
-  small: new Rational(1, 1),
-  large: new Rational(100, 1)
-};
-
-// Create a converter with inferred types
-const MyConverter = createPreciseConverter(myScale);
-
-// Type: 'small' | 'large'
-type MyUnit = 'small' | 'large';
-
-// TypeScript enforces valid units
-MyConverter.from(10, 'small');  // ✓ Valid
-MyConverter.from(10, 'medium'); // ✗ Type error
+// TypeScript knows exactly which units are valid
+TimeUnitConverter.from(10, TIME_UNIT.HOUR);  // ✓ Valid
+TimeUnitConverter.from(10, 'invalid');       // ✗ Type error
 ```
 
 ---
