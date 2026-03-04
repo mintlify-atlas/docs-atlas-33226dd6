@@ -1,0 +1,89 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Univerto",
+  "projectDescription": "Lightweight, zero-dependency, type-safe unit converter library with fluent API and precise fraction-based calculations",
+  "theme": "mint",
+  "primaryColor": "#848c8e",
+  "lightColor": "#11161e",
+  "darkColor": "#cfd0d2",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": ["concepts/fluent-api", "concepts/precision", "concepts/high-precision-arithmetic"]
+          },
+          {
+            "group": "Unit Converters",
+            "pages": [
+              "converters/length",
+              "converters/area",
+              "converters/volume",
+              "converters/mass",
+              "converters/time",
+              "converters/speed",
+              "converters/data",
+              "converters/voltage",
+              "converters/current",
+              "converters/frequency"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": ["advanced/tree-shaking", "advanced/typescript"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API",
+            "pages": [
+              "api/unit-converter",
+              "api/conversion-methods",
+              "api/types"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Zero dependencies for minimal bundle size",
+    "Type-safe unit conversions with TypeScript",
+    "Fluent chainable API (from().to().convert())",
+    "Precise fraction-based calculations avoiding floating point errors",
+    "Tree-shakeable modular exports for optimal bundle size",
+    "Support for high-precision arithmetic with decimal.js or similar libraries",
+    "10 unit categories: length, area, volume, mass, time, speed, data, voltage, current, frequency"
+  ],
+  "publicApiSurface": [
+    "TimeUnitConverter",
+    "LengthUnitConverter",
+    "AreaUnitConverter",
+    "VolumeUnitConverter",
+    "MassUnitConverter",
+    "SpeedUnitConverter",
+    "DataUnitConverter",
+    "VoltageUnitConverter",
+    "CurrentUnitConverter",
+    "FrequencyUnitConverter",
+    "TIME_UNIT",
+    "LENGTH_UNIT",
+    "AREA_UNIT",
+    "VOLUME_UNIT",
+    "MASS_UNIT",
+    "SPEED_UNIT",
+    "DATA_UNIT",
+    "VOLTAGE_UNIT",
+    "CURRENT_UNIT",
+    "FREQUENCY_UNIT"
+  ]
+}
